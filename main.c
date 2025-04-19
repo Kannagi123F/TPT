@@ -130,18 +130,32 @@ void menuConjuntos(tData A, tData B) {
 }
 
 void crearConjunto(tData *A,int i){
-	tData cadena1 = createData(1);
-	tData cadena2 = createData(1);
+	tData cadena1 = createStr();
+	tData cadena2 = createStr();
+	tData cadena3 = createStr();
+	tData cadena4 = createStr();
+	tData sublista = createList();
 	
 	if(i==1){
 		cadena1->cad= load2("Hola");
-		cadena2->cad= load2("mundo");}
+		cadena2->cad= load2("mundo");
+		cadena3->cad= load2("ab,b,cd,e");
+		cadena4= toSetWToken(cadena3, ',');
+		agregarData(&sublista, cadena1);
+	}
 	else{
 		cadena1->cad= load2("Hola");
-		cadena2->cad= load2("TCI");}
+		cadena2->cad= load2("TCI");
+		cadena3->cad= load2("b,f,dc,s,e");
+		cadena4= toSetWToken(cadena3, ',');
+		agregarData(&sublista, cadena1);
+	}
 	
 	agregarData(&(*A), cadena1);
 	agregarData(&(*A), cadena2);
+	agregarData(&(*A), cadena4);
+	agregarData(&(*A), cadena3);
+	agregarData(&(*A), sublista);
 }
 
 	

@@ -41,7 +41,9 @@ tData Union (tData, tData);
 tData Interseccion (tData, tData);
 tData Diferencia (tData, tData);
 tData DifSimetrica (tData, tData);
-int contenido(tData, tData);
 int pertenece(tData,tData);
-int cardinalidad(tData);
+int cardinalidad (tData);
+int contenido (tData, tData);
+tData toSetWToken(tData, char);
+
 #endif

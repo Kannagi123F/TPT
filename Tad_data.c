@@ -79,10 +79,10 @@ void agregarData(tData* cab, tData elem){
 			*cab = nvo;
 		}
 		else{
-		tData nvo = createData((*cab != NULL) ? (*cab)->tipoNodo : LIST);  
-		nvo->dato = copiarData(elem);
-		*cab=nvo;}
-		
+			tData nvo = createData((*cab != NULL) ? (*cab)->tipoNodo : LIST);  // o SET según contexto
+			nvo->dato = copiarData(elem);
+			*cab = nvo;
+		}
 	}
 	else{
 		switch ((*cab)->tipoNodo){
@@ -105,11 +105,10 @@ void agregarData(tData* cab, tData elem){
 			nvo->dato = copiarData(elem);
 			aux->sig = nvo;
 			break;
+			}
 		}
 	}
-	}
-}
-	
+}	
 	
 //funciones nucleo	
 tData copiarData (tData copiado){
@@ -249,6 +248,8 @@ tData crear_arbol(int nivel, int tipo){
 		
 		do {
 			tData hijo = crear_arbol(nivel + 1, op);
+			
+		
 			agregarData(&nva, hijo);
 		} while (continuar(nivel+1) == 1);
 	}
@@ -388,34 +389,63 @@ int contenido(tData A, tData B){
 	return 1;
 }
 
-int longitudCadena(str cad) {
-	int len = 0;
-	while(cad != NULL) {
-		len++;
-		cad = cad->sig;
-	}
-	return len;
-}
+int cardinalidad (tData A){
 	
-int cardinalidad(tData conjunto) {
-	if (conjunto == NULL) return 0;
-		
-	switch(conjunto->tipoNodo) {
-	case STR:
-	return longitudCadena(conjunto->cad);
-	case LIST:
-	case SET: {
-	int count = 0;
-	tData aux = conjunto;
-	while(aux != NULL) {
-	count++;
-	aux = aux->sig;
-	}
-	return count;
-	}
-	default:
-	return 0;
-	}
-}
+	if (A == NULL || A->tipoNodo != SET)
+		return 0;
 	
+	int c= 0;
+	
+	while(A!= NULL){
+		c++;
+		A = A->sig;
+	}
+	
+	return c;
+}
 
+	
+tData toSetWToken(tData cad, char token){
+	
+	if(cad == NULL || cad->tipoNodo != STR)
+		return NULL;
+	
+	
+	tData A_Cab = NULL;
+	tData A_act = NULL;
+	tData Aux;
+	tData restante = NULL;
+	tData nvoStr;
+	
+	restante = copiarData(cad);
+	
+	while (restante->cad != NULL && restante->cad != '\0') {
+		tData parte= createStr();
+		parte->cad = before_token(restante->cad, token);  
+		tData siguiente= createStr();
+		siguiente->cad = after_token(restante->cad, token); 
+		
+		nvoStr = createStr();
+		nvoStr->cad = parte->cad;  
+		
+		if (pertenece(A_Cab, nvoStr) != 0) {
+			Aux = createSet();
+			Aux->dato = nvoStr;
+			
+			if (A_Cab == NULL) A_Cab = Aux;
+			else A_act->sig = Aux;
+			
+			A_act = Aux;
+		} else {
+			freeData(nvoStr); 
+		}
+		
+		free(restante->cad);          
+		restante->cad = siguiente->cad;    
+	}
+	
+	freeData(restante); 
+
+	return A_Cab;
+}	
+	
