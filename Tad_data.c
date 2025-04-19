@@ -75,11 +75,13 @@ void agregarData(tData* cab, tData elem){
 				nvo = createData((*cab)->tipoNodo);
 			else
 				nvo = createList();
-			nvo->dato = elem;
+			nvo->dato = copiarData(elem);
 			*cab = nvo;
 		}
-		else
-			*cab = elem;
+		else{
+		tData nvo = createData((*cab != NULL) ? (*cab)->tipoNodo : LIST);  
+		nvo->dato = copiarData(elem);
+		*cab=nvo;}
 		
 	}
 	else{
@@ -100,7 +102,7 @@ void agregarData(tData* cab, tData elem){
 				aux = aux->sig;
 			
 			nvo = createData(aux->tipoNodo);
-			nvo->dato = elem;
+			nvo->dato = copiarData(elem);
 			aux->sig = nvo;
 			break;
 		}
@@ -108,17 +110,52 @@ void agregarData(tData* cab, tData elem){
 	}
 }
 	
-//conjuntos
 	
-tData Union (tData A, tData B){
-	if (A->tipoNodo != SET || B->tipoNodo != SET)
-		return NULL;
-	return A;
+//funciones nucleo	
+tData copiarData (tData copiado){
+	tData nvo = NULL;
+	if (copiado == NULL) return nvo;
+	
+	switch (copiado->tipoNodo){
+	case STR:
+		nvo = createStr(); 
+		nvo->cad = copyStr(copiado->cad);
+		break;
+	case LIST:
+		nvo = createList();
+		nvo->dato = copiarData( copiado->dato);
+		nvo->sig = copiarData (copiado ->sig);
+		break;
+	case SET:
+		nvo = createSet();
+		nvo->dato = copiarData( copiado->dato);
+		nvo->sig = copiarData (copiado ->sig);
+		break;
+	}
+	
+	return nvo;
+}	
+	
+void freeData(tData descartado){
+	
+	if (descartado == NULL) return;
+	
+	switch (descartado->tipoNodo){
+	case STR:
+		freeString(descartado->cad);
+		break;
+	case LIST:
+	case SET:
+		freeData(descartado->dato);
+		freeData(descartado->sig);
+		break;
+	}
+	
+	free(descartado);
 }
 	
-
 int Igualdad(tData A, tData B){
-	
+		
 	if(A==NULL && B==NULL) return 0;
 	if(A==NULL || B==NULL || (A->tipoNodo!=B->tipoNodo)) return 1;
 	
@@ -131,47 +168,254 @@ int Igualdad(tData A, tData B){
 		tData auxA = A;
 		while(auxA != NULL){
 			if(pertenece(B, auxA->dato) != 0) return 1;
-			auxA = auxA->sig;
+				auxA = auxA->sig;
 		}
-/*		tData auxB = B;*/
-/*		while(auxB != NULL){*/
-/*			if(pertenece(A, auxB->dato) != 0) return 1;*/
-/*			auxB = auxB->sig;*/
-/*		}*/
+		tData auxB = B;
+		while(auxB != NULL){
+			if(pertenece(A, auxB->dato) != 0) return 1;
+				auxB = auxB->sig;
+		}
 		return 0;
-	}
-	
+		}
+		
 	case LIST:{
 		tData auxA = A;
 		tData auxB = B;
-		
+
 		while(auxA != NULL && auxB != NULL){
 			if(Igualdad(auxA->dato, auxB->dato) != 0) return 1;
-			auxA = auxA->sig;
-			auxB = auxB->sig;
-		}
-		
-		if(auxA != NULL || auxB != NULL)
-		return 1;
-		
-	return 0;
-}	
+				auxA = auxA->sig;
+				auxB = auxB->sig;
+			}
+			if(auxA != NULL || auxB != NULL)
+				return 1;
+
+			return 0;
+			}	
 	default: return 1;
+	}
+}	
+
+tData Cargar (){
+	tData nvo = NULL;
+	
+	nvo = crear_arbol(0, 0);
+	
+	return nvo;
+}	
+
+void mostrartipo(int tipo){
+	switch(tipo){
+	case 1: printf("string"); break;
+	case 2: printf("list"); break;
+	case 3: printf("set"); break;
+	default: printf("Sin tipo");
+	}
 }
+	
+int retorna_tipo(){
+	int op;
+	do{printf("\nQue desea agregar");
+	printf("\nPresione 1 cadena");
+	printf("\nPresione 2 lista");
+	printf("\nPresione 3 conjunto");
+	printf("\nIngrese su opcion: ");
+	scanf("%d",&op);}while (op!= 1 && op != 2 && op != 3);
+	return op;
+}	
+int continuar(int nivel){
+	int op;
+	
+	do{
+	printf("\nDesea seguir cargando en nivel %d", nivel);
+	printf("\nPresione 1 Si");
+	printf("\nPresione 0 No");
+	printf("\nIngrese su opcion: ");
+	scanf("%d",&op);}while (op != 1 && op != 0);
+	return op;
+}
+	
+tData crear_arbol(int nivel, int tipo){
+	int op;
+	tData nva=NULL;
+	
+	printf("\n Se encuentra en el nivel : %d", nivel);
+	printf("\n El tipo de dato en este nivel es : "); mostrartipo(tipo);
+	op=retorna_tipo();
+	
+	
+	if(op!=STR){
+		nva = createData(op);
+		
+		do {
+			tData hijo = crear_arbol(nivel + 1, op);
+			agregarData(&nva, hijo);
+		} while (continuar(nivel+1) == 1);
+	}
+	else{
+		nva=createStr();
+		
+		printf("Ingrese la cadena: ");
+		nva->cad=load();
+		return nva;
+	}
+	return nva;
+}		
+	
+//conjuntos
+	
+tData Union (tData A, tData B){
+	if (A->tipoNodo != SET || B->tipoNodo != SET)
+		return NULL;
+	
+	tData C_Cab = NULL, C_act = NULL;
+	tData aux;
+	
+	while(A != NULL){
+		
+		aux= createSet();
+		aux->dato = copiarData(A->dato);
+		
+		if(C_Cab == NULL) C_Cab = aux;
+		else C_act->sig = aux;
+		
+		C_act= aux;
+		
+		A = A->sig;
+	}
+	while(B != NULL){
+		
+		if(pertenece(C_Cab, B->dato)){
+			
+			aux= createSet();
+			aux->dato = copiarData(B->dato);
+			
+			if(C_Cab == NULL) C_Cab = aux;
+			else C_act->sig = aux;
+			
+			C_act= aux;
+			
+		}
+		B = B->sig;
+	}
+	
+	return C_Cab;
 }
 
-	int pertenece(tData A, tData elem){
-		if (A == NULL || elem == NULL) return 1;
-		if (A->tipoNodo != LIST && A->tipoNodo != SET) return 1;
+tData Interseccion (tData A, tData B){
+	if (A->tipoNodo != SET || B->tipoNodo != SET)
+		return NULL;
+	tData C_Cab = NULL, C_act = NULL;
+	tData aux;
+	while(A != NULL){
 		
-		tData aux = A;
-		
-		while (aux != NULL) {
-			if (Igualdad(aux->dato, elem) == 0)
-				return 0;
-			aux = aux->sig;
+		if(! pertenece(B, A->dato)){
+			
+			aux= createSet();
+			aux->dato = copiarData(A->dato);
+			
+			if(C_Cab == NULL) C_Cab = aux;
+			else C_act->sig = aux;
+			
+			C_act= aux;
+			
 		}
-		
-		return 1;
+		A = A->sig;
 	}
+	return C_Cab;
+}
+
+tData Diferencia (tData A, tData B){
+	if (A->tipoNodo != SET || B->tipoNodo != SET)
+		return NULL;
+	
+	tData C_Cab = NULL, C_act = NULL;
+	tData aux;
+	while(A != NULL){
 		
+		if( pertenece(B, A->dato)){
+			
+			aux= createSet();
+			aux->dato = copiarData(A->dato);
+			
+			if(C_Cab == NULL) C_Cab = aux;
+			else C_act->sig = aux;
+			
+			C_act= aux;
+			
+		}
+		A = A->sig;
+	}
+	return C_Cab;
+}
+
+/*tData DifSimetrica (tData A, tData B){*/
+/*	if (A->tipoNodo != SET || B->tipoNodo != SET)*/
+/*		return NULL;*/
+	
+/*	tData D = Diferencia(A, B);*/
+/*	tData E = Diferencia(B, A);*/
+	
+/*	tData F = NULL;*/
+/*	F = Union (D, E);*/
+	
+	
+/*	return F;*/
+/*}*/
+
+int pertenece(tData A, tData elem){
+	if (A == NULL || elem == NULL) return 1;
+	if (A->tipoNodo != LIST && A->tipoNodo != SET) return 1;
+		
+	tData aux = A;
+		
+	while (aux != NULL) {
+		if (Igualdad(aux->dato, elem) == 0)
+			return 0;
+		aux = aux->sig;
+	}
+	
+	return 1;
+}
+
+int contenido(tData A, tData B){
+	
+	tData auxA = A;
+	while(auxA != NULL){
+		if(pertenece(B, auxA->dato) != 0) return 0;
+		auxA = auxA->sig;
+	}
+	return 1;
+}
+
+int longitudCadena(str cad) {
+	int len = 0;
+	while(cad != NULL) {
+		len++;
+		cad = cad->sig;
+	}
+	return len;
+}
+	
+int cardinalidad(tData conjunto) {
+	if (conjunto == NULL) return 0;
+		
+	switch(conjunto->tipoNodo) {
+	case STR:
+	return longitudCadena(conjunto->cad);
+	case LIST:
+	case SET: {
+	int count = 0;
+	tData aux = conjunto;
+	while(aux != NULL) {
+	count++;
+	aux = aux->sig;
+	}
+	return count;
+	}
+	default:
+	return 0;
+	}
+}
+	
+
