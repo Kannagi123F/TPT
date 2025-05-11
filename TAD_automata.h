@@ -19,4 +19,6 @@ tAF Cargar_aut_cons();
 tAF Cargar_hard();
 tAF CargarPorConsola();
 tAF cargar_automata_desde_csv();
+void seleccion(tAF);
+
 #endif

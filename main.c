@@ -18,6 +18,7 @@ int mensaje(){
 	scanf("%d",&op);
 	return op;
 }
+
 	
 void Menu(tAF *A){
 	int op;
@@ -25,9 +26,9 @@ void Menu(tAF *A){
 	op=mensaje();
 	system("cls");
 	switch(op){
-	case 1:*A =CargarPorConsola();Mostrar_aut(*A);Verifica_cad(*A);break;
-	case 2:*A =Cargar_hard();Mostrar_aut(*A);Verifica_cad(*A);break;
-	case 3:*A =cargar_automata_desde_csv();Mostrar_aut(*A);Verifica_cad(*A);break;
+	case 1:*A =CargarPorConsola();seleccion(*A);break;
+	case 2:*A =Cargar_hard();seleccion(*A);break;
+	case 3:*A =cargar_automata_desde_csv();seleccion(*A);break;
 	}
 	
 }

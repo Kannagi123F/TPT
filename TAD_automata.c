@@ -271,4 +271,51 @@ tAF cargar_automata_desde_csv() {
 	
 return automata;
 }
+
+void limpiar(){
+	printf("\n");system("pause");system("cls");;
+}
+
+void MostrarUpla(tAF B){
+	int op;
+	do{
 	
+	printf("\nIngrese que Upla desea ver:\n");
+	printf("1-Alfabeto\n");
+	printf("2-Estados\n");
+	printf("3-Estados finales\n");
+	printf("4-Estado inicial\n");
+	printf("5-Transiciones\n");
+	printf("6-Salir\n");
+	printf("Ingrese opcion:");
+	scanf("%d",&op);
+	
+	switch(op){
+	case 1:Mostrar_Upla(B.Alfabeto);limpiar();break;
+	case 2:Mostrar_Upla(B.ConjE);limpiar();break;
+	case 3:Mostrar_Upla(B.ConjA);limpiar();break;
+	case 4:Mostrar_Upla(B.Inicial);limpiar();break;
+	case 5:Mostrar_Upla(B.Delta);limpiar();break;
+	case 6:printf("Volviendo al menu...\n");break;
+	default:printf("Error de ingreso");limpiar();break;
+	}
+	}while(op!=6);
+}
+
+void seleccion(tAF A){
+	int selec=0;
+	while(selec!=4){
+		printf("\nMostrar:\n1-Una Upla\n2-Automata completo\n3-Verificar automata\n4-Salir\n");
+		printf("Ingrese opcion:");
+		scanf("%d",&selec);
+		if (selec==2)
+		{limpiar();
+		Mostrar_aut(A);}
+		else if(selec==1){limpiar();
+			MostrarUpla(A);printf("\n");}
+		else if (selec==3) {Verifica_cad(A);printf("\n");}
+		else if(selec==4) printf("Saliendo...");
+		else {printf("Error de ingreso\n");
+		system("CLS");}
+	}
+}
