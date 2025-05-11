@@ -152,5 +152,4 @@ int isin (str a, str b){
 			return 1;
 	}
 	return isin(a, b->sig);
-	
 }

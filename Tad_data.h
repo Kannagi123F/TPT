@@ -46,4 +46,6 @@ int cardinalidad (tData);
 int contenido (tData, tData);
 tData toSetWToken(tData, char);
 
+//funcion de cargar por cadena
+tData crearDesdeCadena(const char*);
 #endif

@@ -266,6 +266,11 @@ tData crear_arbol(int nivel, int tipo){
 //conjuntos
 	
 tData Union (tData A, tData B){
+	if (A == NULL)
+		return copiarData(B);
+	if(B == NULL)
+		return copiarData(A);	
+	
 	if (A->tipoNodo != SET || B->tipoNodo != SET)
 		return NULL;
 	
@@ -304,6 +309,9 @@ tData Union (tData A, tData B){
 }
 
 tData Interseccion (tData A, tData B){
+	if (A == NULL || B == NULL)
+		return NULL;
+	
 	if (A->tipoNodo != SET || B->tipoNodo != SET)
 		return NULL;
 	tData C_Cab = NULL, C_act = NULL;
@@ -327,6 +335,11 @@ tData Interseccion (tData A, tData B){
 }
 
 tData Diferencia (tData A, tData B){
+	if (A == NULL)
+		return NULL;
+	if (B == NULL)
+		return copiarData(A);
+	
 	if (A->tipoNodo != SET || B->tipoNodo != SET)
 		return NULL;
 	
@@ -350,19 +363,19 @@ tData Diferencia (tData A, tData B){
 	return C_Cab;
 }
 
-/*tData DifSimetrica (tData A, tData B){*/
-/*	if (A->tipoNodo != SET || B->tipoNodo != SET)*/
-/*		return NULL;*/
+tData DifSimetrica (tData A, tData B){
+	if (A->tipoNodo != SET || B->tipoNodo != SET)
+		return NULL;
 	
-/*	tData D = Diferencia(A, B);*/
-/*	tData E = Diferencia(B, A);*/
+	tData D = Diferencia(A, B);
+	tData E = Diferencia(B, A);
 	
-/*	tData F = NULL;*/
-/*	F = Union (D, E);*/
+	tData F = NULL;
+	F = Union (D, E);
 	
 	
-/*	return F;*/
-/*}*/
+	return F;
+}
 
 int pertenece(tData A, tData elem){
 	if (A == NULL || elem == NULL) return 1;
@@ -448,4 +461,60 @@ tData toSetWToken(tData cad, char token){
 
 	return A_Cab;
 }	
+
+tData procesar_cadena_simple(str *restante) {
+	str parte = before_token(*restante, ',');
+	parte = before_token(parte, ']');
+	parte = before_token(parte, '}');
 	
+	tData nodo = createStr();
+	if (nodo != NULL) {
+	nodo->cad = copyStr(parte);
+	}
+	while (*restante != NULL && (*restante)->dato != ',' && (*restante)->dato != ']' && (*restante)->dato != '}') {
+	*restante = (*restante)->sig;
+	}
+	freeString(parte);
+	
+	return nodo;
+}
+	
+tData buscarCadena(str *restante) {
+	if (*restante == NULL) return NULL;
+	
+	tData nodo = NULL;
+	char primer_car = (*restante)->dato;
+	char delimitador = (primer_car == '[') ? ']' : '}'; 
+	
+	if (primer_car == '[') {
+	nodo = createList();
+	} else if (primer_car == '{') {
+	nodo = createSet();
+	} else {return procesar_cadena_simple(restante);
+	}
+	
+	*restante = (*restante)->sig; 
+	
+	while (*restante != NULL && (*restante)->dato != delimitador) {
+	tData elem = buscarCadena(restante);
+	if (elem != NULL) {
+	agregarData(&nodo, elem);
+	}
+	if (*restante != NULL && (*restante)->dato == ',') {
+		*restante = (*restante)->sig;
+	}}
+	
+	if (*restante != NULL) {
+	*restante = (*restante)->sig;
+	}
+	
+return nodo;
+}
+	
+tData crearDesdeCadena(const char *input) {
+	str S = load2(input);
+	str restante = S;
+	tData resultado = buscarCadena(&restante);
+	freeString(S);
+	return resultado;
+}
