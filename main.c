@@ -28,7 +28,7 @@ void Menu(tAF *A){
 	switch(op){
 	case 1:*A =CargarPorConsola();seleccion(*A);break;
 	case 2:*A =Cargar_hard();seleccion(*A);break;
-	case 3:*A =cargar_automata_desde_csv();seleccion(*A);break;
+	case 3:*A =Carga_desde_excel();seleccion(*A);break;
 	}
 	
 }

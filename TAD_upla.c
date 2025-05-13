@@ -214,3 +214,162 @@ tUpla cargarTransicion(tUpla Alfa, tUpla Estado, int a){
 	}
 return nuevo;
 }
+	
+tUpla cargarAlfabeto2() {
+	tUpla nuevo;
+	tData aux;
+	nuevo = createSet();
+	int col=0;
+	char linea[TAM];
+	char*token;
+	
+	FILE* file = fopen("Datos.csv", "r");
+	
+	fgets(linea, sizeof(linea), file);
+	linea[strcspn(linea, "\n")] = 0;
+	token = strtok(linea, ";");
+	int n=strlen(linea);
+	while(col<n){
+		if (col>0){
+			aux = createStr();
+			aux->cad=load2(token);
+			agregarData(&nuevo,aux);}
+		token = strtok(NULL, ";");
+		col=col+1;
+	}
+	fclose(file);
+	return nuevo;
+} 
+	
+tUpla cargarEstado2() {
+	tUpla nuevo;
+	tData aux;
+	nuevo = createSet();
+	aux = createStr();
+	int fila=0;
+	char linea[TAM];
+	char*token;
+	
+	FILE* file = fopen("Datos.csv", "r");
+	fgets(linea, sizeof(linea), file);
+	
+	while (fgets(linea, sizeof(linea), file) != NULL) {
+		linea[strcspn(linea, "\n")] = 0;
+		
+		token = strtok(linea, ";");
+		if (token != NULL) {
+			if (token[0] == '*') token=token+1;
+			aux = createStr();
+			aux->cad = load2(token);  
+			agregarData(&nuevo,aux);
+		}
+		fila++;
+	}
+fclose(file);
+return nuevo;
+}
+	
+tUpla cargarInicial2(){
+	tUpla nuevo;
+	nuevo = createStr();
+	char linea[TAM];
+	char*token;
+	
+	FILE* file = fopen("Datos.csv", "r");
+	fgets(linea, sizeof(linea), file);
+	fgets(linea, sizeof(linea), file);
+	linea[strcspn(linea, "\n")] = 0;
+	token = strtok(linea, ";");
+	nuevo->cad=load2(token);
+	agregarData(&nuevo,nuevo);
+	
+	fclose(file);
+	return nuevo;
+}
+	
+tUpla cargarFinal2() {	
+	tUpla nuevo;
+	tData aux;
+	nuevo = createSet();
+	char linea[TAM];
+	char*token;
+	
+	FILE* file = fopen("Datos.csv", "r");
+	fgets(linea, sizeof(linea), file);
+	token = strtok(linea, ";");
+	
+	while (fgets(linea, sizeof(linea), file) != NULL) {
+		linea[strcspn(linea, "\n")] = 0;
+		token = strtok(linea, ";");
+		if(token[0] == '*')
+		{token=token+1;
+		aux = createStr();
+		aux->cad = load2(token); 
+		agregarData(&nuevo,aux);}
+	}
+	return nuevo;
+}	
+
+void cortar_linea(char *linea) {
+	if (linea != NULL && linea[0] == '*') {
+	memmove(linea, linea + 1, strlen(linea));
+	}
+}
+	
+	
+tUpla cargarTransicion2(tUpla Alfa, tUpla Estado) {
+	tUpla nuevo,nav, aux1;
+	tData aux;
+	nuevo = createList();
+	nav=createList();
+	aux1=Alfa;
+	char linea[TAM];
+	char*token;
+	int col;
+	
+	FILE* file = fopen("Datos.csv", "r");
+	fgets(linea, sizeof(linea), file);
+	fgets(linea, sizeof(linea), file);
+	token = strtok(linea, ";");
+	
+	while(Estado!=NULL){
+		Alfa=aux1;
+		if(token[0] == '*')col=1;
+		else col=0;
+		int c=0;
+		while(Alfa!=NULL &&col!='\n'){
+			if (col>0){
+				c=strlen(token);
+				if(c<=3){
+					aux=createStr();
+					aux->cad=load2(token);
+					agregarData(&nav,Estado->dato);
+					agregarData(&nav,Alfa->dato);
+					agregarData(&nav,aux);
+				} else{
+					aux->cad=load2(token);
+					agregarData(&nav,Estado->dato);
+					agregarData(&nav,Alfa->dato);
+					agregarData(&nav,aux);	}
+			}	
+			if (c==0)token = strtok(NULL, ";");
+			else if(col>0)
+			{agregarData(&nuevo, nav);
+			nav=NULL;
+			Alfa= Alfa->sig;
+			token = strtok(linea, ";");
+			}
+			else if (col<0 &&token==NULL){
+				token = strtok(NULL, ";");}
+			
+			col=col+1;
+		} 
+		fgets(linea, sizeof(linea), file);
+		if(token[0] == '*')
+			cortar_linea(linea);
+		token = strtok(linea, ";");
+		Estado= Estado->sig;
+	}
+	return nuevo;
+
+}

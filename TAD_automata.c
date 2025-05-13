@@ -319,3 +319,15 @@ void seleccion(tAF A){
 		system("CLS");}
 	}
 }
+
+tAF Carga_desde_excel() {
+	tAF Aut;
+	
+	Aut.Alfabeto = cargarAlfabeto2();
+	Aut.ConjE = cargarEstado2();
+	Aut.Inicial = cargarInicial2();
+	Aut.ConjA=cargarFinal2();
+	Aut.Delta=cargarTransicion2(Aut.Alfabeto,Aut.ConjE);
+	return Aut;
+}
+	
