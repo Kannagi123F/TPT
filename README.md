@@ -1,6 +1,9 @@
-TPT 2026 integrantes: Aiza Nicolás Ezequiel, Vides Aparicio Francisco Gabriel
+**TPT 2026 integrantes:**
+- Aiza Nicolás Ezequiel
+- Vides Aparicio Francisco Gabriel
 
-Arquitectura de Archivos del Proyecto propuestos:
+**Arquitectura de Archivos del Proyecto propuestos:**
+```text
   TAD_string.h
   TAD_string.c
   TAD_data.h
@@ -8,5 +11,4 @@ Arquitectura de Archivos del Proyecto propuestos:
   TAD_Automata.h
   TAD_Automata.c
   main.c
-
-  
+```
