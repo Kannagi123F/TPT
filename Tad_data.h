@@ -2,50 +2,58 @@
 #define TAD_DATA_H
 
 #include "TAD_string.h"
+
 #define STR 1
-#define LIST 2
-#define SET 3
+#define SET 2
+#define LIST 3
 
-
-typedef struct nodo_data{
-	int tipoNodo;
-	union{
-		str cad;
-		struct{
-			struct nodo_data * dato;
-			struct nodo_data * sig;
+typedef struct nodo_data {
+	int nodeType;
+	union {
+		str string;
+		struct {
+			struct nodo_data *data;
+			struct nodo_data *sig;
 		};
 	};
-}TNodoData;
+} TNodoData;
 
-typedef TNodoData * tData;
+typedef TNodoData *tData;
 
+/* Creación */
+tData create_str_ast();
+tData create_list();
+tData create_set();
 
-tData createData(int);
-tData createList();
-tData createSet();
-tData createStr();
+/* Operaciones sobre STR */
+tData concat_str(tData s1, tData s2);
+int compare_str(tData s1, tData s2);
 
-//funciones nucleo
-int Igualdad(tData, tData);
-tData copiarData(tData);
-void mostrarData(tData);
-void agregarData(tData*, tData);
-void freeData(tData);
-tData Cargar();
-tData crear_arbol(int, int);
+/* Operaciones sobre LIST */
+void append(tData* list, tData elem);
+int length(tData list);
+tData copy_list(tData list);
+tData concat_list(tData l1, tData l2);
+int search(tData list, tData elem);
 
+/* Operaciones sobre SET */
+void insert_set(tData* set, tData elem);
+int belongs(tData set, tData elem);
+void remove_set(tData* set, tData elem);
 
-//operaciones de conjunto
-tData Union (tData, tData);
-tData Interseccion (tData, tData);
-tData Diferencia (tData, tData);
-tData DifSimetrica (tData, tData);
-int pertenece(tData,tData);
-int cardinalidad (tData);
-int contenido (tData, tData);
-tData toSetWToken(tData, char);
+/* Operaciones algebraicas */
+tData union_set(tData A, tData B);
+tData intersection_set(tData A, tData B);
+tData difference_set(tData A, tData B);
+int subset(tData A, tData B);
+int equals_set(tData A, tData B);
 
-//funcion de cargar por cadena
-tData crearDesdeCadena(const char*);
+/* Auxiliares */
+void freeData(tData descartado);
+void mostrarData(tData nodo);
+tData producto_cartesiano(tData A, tData B);
+tData toSetWToken(tData cad, char token);
+tData str_to_list(tData cadena);
+tData list_to_str(tData lista);
+
 #endif
